@@ -18,7 +18,7 @@ DATASETS:
   TRAIN: ("cityscape_2007_train_t",)
   TEST: ("cityscape_2007_test_t",)
 SOLVER:
-  BASE_LR: 0.0005
+  BASE_LR: 0.001
   WEIGHT_DECAY: 0.0001
   STEPS: ()
   MAX_ITER: 70000

@@ -106,13 +106,94 @@ def plot_training_curves(output_dir, history, keys=None, smooth_window=51):
     os.makedirs(output_dir, exist_ok=True)
     steps = history.get("iter", [])
     ap_steps = history.get("ap_iter", [])
+    ap_steps_student = history.get("ap_iter_student", [])
+    ap_steps_teacher = history.get("ap_iter_teacher", [])
+    skip_keys = {
+        "iter",
+        "ap_iter",
+        "ap_iter_student",
+        "ap_iter_teacher",
+        "ap50_student",
+        "ap50_teacher",
+        "ap_student",
+        "ap_teacher",
+    }
     for key, values in history.items():
-        if key in ("iter", "ap_iter"):
+        if key in skip_keys:
             continue
         if keys is not None and key not in keys:
             continue
         if not values:
             continue
+        if key == "ap50":
+            student_vals = history.get("ap50_student", [])
+            teacher_vals = history.get("ap50_teacher", history.get("ap50", []))
+            if student_vals or teacher_vals:
+                plt.figure()
+                drawn = False
+                if student_vals and ap_steps_student:
+                    s_vals = _smooth_series(student_vals, smooth_window)
+                    plt.plot(
+                        ap_steps_student[: len(s_vals)],
+                        s_vals,
+                        color="tab:blue",
+                        marker="o",
+                        label="Student AP50",
+                    )
+                    s_x = ap_steps_student[min(len(ap_steps_student), len(s_vals)) - 1]
+                    s_y = s_vals[-1]
+                    plt.annotate(
+                        f"S {s_y:.2f}",
+                        xy=(s_x, s_y),
+                        xytext=(4, 6),
+                        textcoords="offset points",
+                        color="tab:blue",
+                        fontsize=8,
+                    )
+                    drawn = True
+                teacher_x = ap_steps_teacher if ap_steps_teacher else ap_steps
+                if teacher_vals and teacher_x:
+                    t_vals = _smooth_series(teacher_vals, smooth_window)
+                    plt.plot(
+                        teacher_x[: len(t_vals)],
+                        t_vals,
+                        color="tab:orange",
+                        marker="s",
+                        label="Teacher AP50",
+                    )
+                    t_x = teacher_x[min(len(teacher_x), len(t_vals)) - 1]
+                    t_y = t_vals[-1]
+                    plt.annotate(
+                        f"T {t_y:.2f}",
+                        xy=(t_x, t_y),
+                        xytext=(4, -10),
+                        textcoords="offset points",
+                        color="tab:orange",
+                        fontsize=8,
+                    )
+                    drawn = True
+                if not drawn:
+                    plt.close()
+                    continue
+                plt.xlabel("epoch")
+                plt.ylabel("ap50")
+                plt.title("ap50")
+                plt.grid(True, linestyle="--", alpha=0.3)
+                plt.legend(loc="best")
+                plt.text(
+                    0.01,
+                    0.98,
+                    "Blue: Student  Orange: Teacher",
+                    transform=plt.gca().transAxes,
+                    va="top",
+                    fontsize=8,
+                    bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="0.7", alpha=0.8),
+                )
+                out_path = os.path.join(output_dir, "ap50.png")
+                plt.tight_layout()
+                plt.savefig(out_path, dpi=150)
+                plt.close()
+                continue
         plt.figure()
         plot_vals = _smooth_series(values, smooth_window)
         if key in ("ap", "ap50") and ap_steps:
@@ -432,7 +513,7 @@ def train_sfda(cfg, model_student, model_dynamic, model_static=None, resume=Fals
 
     data_loader = build_detection_train_loader(cfg)
 
-    total_epochs = 10
+    total_epochs = 5
     len_data_loader = len(data_loader.dataset.dataset.dataset)
     start_iter = 0
     if use_pets and getattr(cfg.SOURCE_FREE.PETS, "EPOCH_ITERS", 0) > 0:
@@ -577,12 +658,19 @@ def train_sfda(cfg, model_student, model_dynamic, model_static=None, resume=Fals
             else:
                 if epoch > warmup_epochs and epoch % exchange_period == 0 and model_static is not None:
                     exchange_shared_weights(model_student, model_static)
-                    model_dynamic.load_state_dict(model_student.state_dict(), strict=False)
 
             if cfg.TEST.EVAL_PERIOD > 0:
                 model_student.eval()
                 logger.info("[EPOCH %d][STUDENT] Evaluation start", epoch)
-                test_sfda(cfg, model_student)
+                student_results = test_sfda(cfg, model_student)
+                if isinstance(student_results, dict) and "bbox" in student_results:
+                    bbox_res = student_results["bbox"]
+                    if "AP50" in bbox_res:
+                        history["ap50_student"].append(bbox_res["AP50"])
+                        history["ap_iter_student"].append(epoch)
+                    elif "AP" in bbox_res:
+                        history["ap_student"].append(bbox_res["AP"])
+                        history["ap_iter_student"].append(epoch)
 
                 model_dynamic.eval()
                 logger.info("[EPOCH %d][TEACHER] Evaluation start", epoch)
@@ -590,9 +678,13 @@ def train_sfda(cfg, model_student, model_dynamic, model_static=None, resume=Fals
                 if isinstance(teacher_results, dict) and "bbox" in teacher_results:
                     bbox_res = teacher_results["bbox"]
                     if "AP50" in bbox_res:
+                        history["ap50_teacher"].append(bbox_res["AP50"])
+                        history["ap_iter_teacher"].append(epoch)
                         history["ap50"].append(bbox_res["AP50"])
                         history["ap_iter"].append(epoch)
                     elif "AP" in bbox_res:
+                        history["ap_teacher"].append(bbox_res["AP"])
+                        history["ap_iter_teacher"].append(epoch)
                         history["ap"].append(bbox_res["AP"])
                         history["ap_iter"].append(epoch)
 

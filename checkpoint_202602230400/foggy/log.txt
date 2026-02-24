@@ -1,0 +1,1338 @@
+[02/23 01:04:00] detectron2 INFO: Rank of current process: 0. World size: 1
+[02/23 01:04:01] detectron2 INFO: Environment info:
+----------------------  ---------------------------------------------------------------------------------------------------------
+sys.platform            linux
+Python                  3.6.2 |Continuum Analytics, Inc.| (default, Jul 20 2017, 13:51:32) [GCC 4.4.7 20120313 (Red Hat 4.4.7-1)]
+numpy                   1.19.5
+detectron2              0.6 @/root/irg-sfda/detectron2
+Compiler                GCC 7.5
+CUDA compiler           CUDA 11.1
+detectron2 arch flags   7.0
+DETECTRON2_ENV_MODULE   <not set>
+PyTorch                 1.9.0+cu102 @/root/miniconda3/envs/irg_sfda/lib/python3.6/site-packages/torch
+PyTorch debug build     False
+GPU available           Yes
+GPU 0                   NVIDIA GeForce RTX 2080 Ti (arch=7.5)
+Driver version          550.90.07
+CUDA_HOME               /usr/local/cuda
+Pillow                  8.3.2
+torchvision             0.10.0+cu102 @/root/miniconda3/envs/irg_sfda/lib/python3.6/site-packages/torchvision
+torchvision arch flags  3.5, 5.0, 6.0, 7.0, 7.5
+fvcore                  0.1.5.post20210924
+iopath                  0.1.8
+cv2                     4.5.3
+----------------------  ---------------------------------------------------------------------------------------------------------
+PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.1.2 (Git Hash 98be7e8afa711dc9b66c8ff3504129cb82013cdb)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 10.2
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70
+  - CuDNN 7.6.5
+  - Magma 2.5.2
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=10.2, CUDNN_VERSION=7.6.5, CXX_COMPILER=/opt/rh/devtoolset-7/root/usr/bin/c++, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.9.0, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, 
+
+[02/23 01:04:01] detectron2 INFO: Command line arguments: Namespace(config_file='configs/sfda/sfda_foggy.yaml', dist_url='tcp://127.0.0.1:49152', eval_only=False, machine_rank=0, model_dir='/root/autodl-tmp/model_final.pth', num_gpus=1, num_machines=1, opts=[], resume=False)
+[02/23 01:04:01] detectron2 INFO: Contents of args.config_file=configs/sfda/sfda_foggy.yaml:
+MODEL:
+  META_ARCHITECTURE: "student_sfda_RCNN"
+  WEIGHT: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
+  MASK_ON: False
+  RPN:
+    PRE_NMS_TOPK_TEST: 6000
+    POST_NMS_TOPK_TEST: 300
+    ANCHOR_SIZES: (128, 256, 512)
+  ROI_HEADS:
+    NUM_CLASSES: 8
+  RESNETS:
+    NORM: "FrozenBN" 
+    OUT_FEATURES: ["res4"]
+INPUT:
+  MIN_SIZE_TRAIN: (600,)
+  MIN_SIZE_TEST: 600
+DATASETS:
+  TRAIN: ("cityscape_2007_train_t",)
+  TEST: ("cityscape_2007_test_t",)
+SOLVER:
+  BASE_LR: 0.0001
+  WEIGHT_DECAY: 0.0001
+  STEPS: ()
+  MAX_ITER: 70000
+  IMS_PER_BATCH: 1
+  WARMUP_ITERS: 0
+  CHECKPOINT_PERIOD: 5000
+TEST:
+  EVAL_PERIOD: 2000
+SOURCE_FREE:
+  TYPE: True
+  MODE: True
+  PETS:
+    ENABLED: True
+    EXCHANGE_PERIOD: 2
+    EMA_KEEP_RATE: 0.999
+    CONF_THRESH: 0.5
+    IOU_THRESH: 0.5
+    BETA: 0.5
+    EPOCH_ITERS: 0
+    TOTAL_EPOCHS: 10
+    WARMUP_EPOCHS: 2
+OUTPUT_DIR: "./checkpoint/foggy"
+
+[02/23 01:04:01] detectron2 INFO: Running with full config:
+CUDNN_BENCHMARK: false
+DATALOADER:
+  ASPECT_RATIO_GROUPING: true
+  FILTER_EMPTY_ANNOTATIONS: true
+  NUM_WORKERS: 4
+  REPEAT_THRESHOLD: 0.0
+  SAMPLER_TRAIN: TrainingSampler
+DATASETS:
+  PRECOMPUTED_PROPOSAL_TOPK_TEST: 1000
+  PRECOMPUTED_PROPOSAL_TOPK_TRAIN: 2000
+  PROPOSAL_FILES_TEST: []
+  PROPOSAL_FILES_TRAIN: []
+  TEST:
+  - cityscape_2007_test_t
+  TRAIN:
+  - cityscape_2007_train_t
+GLOBAL:
+  HACK: 1.0
+INPUT:
+  AUG_MODE: None
+  CROP:
+    ENABLED: false
+    SIZE:
+    - 0.9
+    - 0.9
+    TYPE: relative_range
+  FORMAT: BGR
+  MASK_FORMAT: polygon
+  MAX_SIZE_TEST: 1333
+  MAX_SIZE_TRAIN: 1333
+  MIN_SIZE_TEST: 600
+  MIN_SIZE_TRAIN:
+  - 600
+  MIN_SIZE_TRAIN_SAMPLING: choice
+  RANDOM_FLIP: horizontal
+MODEL:
+  ANCHOR_GENERATOR:
+    ANGLES:
+    - - -90
+      - 0
+      - 90
+    ASPECT_RATIOS:
+    - - 0.5
+      - 1.0
+      - 2.0
+    NAME: DefaultAnchorGenerator
+    OFFSET: 0.0
+    SIZES:
+    - 128
+    - 256
+    - 512
+  BACKBONE:
+    FREEZE_AT: 2
+    NAME: build_resnet_backbone
+  DEVICE: cuda
+  FPN:
+    FUSE_TYPE: sum
+    IN_FEATURES: []
+    NORM: ''
+    OUT_CHANNELS: 256
+  KEYPOINT_ON: false
+  LOAD_PROPOSALS: false
+  MASK_ON: false
+  META_ARCHITECTURE: student_sfda_RCNN
+  PANOPTIC_FPN:
+    COMBINE:
+      ENABLED: true
+      INSTANCES_CONFIDENCE_THRESH: 0.5
+      OVERLAP_THRESH: 0.5
+      STUFF_AREA_LIMIT: 4096
+    INSTANCE_LOSS_WEIGHT: 1.0
+  PIXEL_MEAN:
+  - 103.53
+  - 116.28
+  - 123.675
+  PIXEL_STD:
+  - 1.0
+  - 1.0
+  - 1.0
+  PROPOSAL_GENERATOR:
+    MIN_SIZE: 0
+    NAME: RPN
+  RESNETS:
+    DEFORM_MODULATED: false
+    DEFORM_NUM_GROUPS: 1
+    DEFORM_ON_PER_STAGE:
+    - false
+    - false
+    - false
+    - false
+    DEPTH: 50
+    NORM: FrozenBN
+    NUM_GROUPS: 1
+    OUT_FEATURES:
+    - res4
+    RES2_OUT_CHANNELS: 256
+    RES5_DILATION: 1
+    STEM_OUT_CHANNELS: 64
+    STRIDE_IN_1X1: true
+    WIDTH_PER_GROUP: 64
+  RETINANET:
+    BBOX_REG_LOSS_TYPE: smooth_l1
+    BBOX_REG_WEIGHTS:
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    FOCAL_LOSS_ALPHA: 0.25
+    FOCAL_LOSS_GAMMA: 2.0
+    IN_FEATURES:
+    - p3
+    - p4
+    - p5
+    - p6
+    - p7
+    IOU_LABELS:
+    - 0
+    - -1
+    - 1
+    IOU_THRESHOLDS:
+    - 0.4
+    - 0.5
+    NMS_THRESH_TEST: 0.5
+    NORM: ''
+    NUM_CLASSES: 80
+    NUM_CONVS: 4
+    PRIOR_PROB: 0.01
+    SCORE_THRESH_TEST: 0.05
+    SMOOTH_L1_LOSS_BETA: 0.1
+    TOPK_CANDIDATES_TEST: 1000
+  ROI_BOX_CASCADE_HEAD:
+    BBOX_REG_WEIGHTS:
+    - - 10.0
+      - 10.0
+      - 5.0
+      - 5.0
+    - - 20.0
+      - 20.0
+      - 10.0
+      - 10.0
+    - - 30.0
+      - 30.0
+      - 15.0
+      - 15.0
+    IOUS:
+    - 0.5
+    - 0.6
+    - 0.7
+  ROI_BOX_HEAD:
+    BBOX_REG_LOSS_TYPE: smooth_l1
+    BBOX_REG_LOSS_WEIGHT: 1.0
+    BBOX_REG_WEIGHTS:
+    - 10.0
+    - 10.0
+    - 5.0
+    - 5.0
+    CLS_AGNOSTIC_BBOX_REG: false
+    CONV_DIM: 256
+    FC_DIM: 1024
+    NAME: ''
+    NORM: ''
+    NUM_CONV: 0
+    NUM_FC: 0
+    POOLER_RESOLUTION: 14
+    POOLER_SAMPLING_RATIO: 0
+    POOLER_TYPE: ROIAlignV2
+    SMOOTH_L1_BETA: 0.0
+    TRAIN_ON_PRED_BOXES: false
+  ROI_HEADS:
+    BATCH_SIZE_PER_IMAGE: 512
+    IN_FEATURES:
+    - res4
+    IOU_LABELS:
+    - 0
+    - 1
+    IOU_THRESHOLDS:
+    - 0.5
+    NAME: Res5ROIHeads
+    NMS_THRESH_TEST: 0.5
+    NUM_CLASSES: 8
+    POSITIVE_FRACTION: 0.25
+    PROPOSAL_APPEND_GT: true
+    SCORE_THRESH_TEST: 0.05
+  ROI_KEYPOINT_HEAD:
+    CONV_DIMS:
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    - 512
+    LOSS_WEIGHT: 1.0
+    MIN_KEYPOINTS_PER_IMAGE: 1
+    NAME: KRCNNConvDeconvUpsampleHead
+    NORMALIZE_LOSS_BY_VISIBLE_KEYPOINTS: true
+    NUM_KEYPOINTS: 17
+    POOLER_RESOLUTION: 14
+    POOLER_SAMPLING_RATIO: 0
+    POOLER_TYPE: ROIAlignV2
+  ROI_MASK_HEAD:
+    CLS_AGNOSTIC_MASK: false
+    CONV_DIM: 256
+    NAME: MaskRCNNConvUpsampleHead
+    NORM: ''
+    NUM_CONV: 0
+    POOLER_RESOLUTION: 14
+    POOLER_SAMPLING_RATIO: 0
+    POOLER_TYPE: ROIAlignV2
+  RPN:
+    BATCH_SIZE_PER_IMAGE: 256
+    BBOX_REG_LOSS_TYPE: smooth_l1
+    BBOX_REG_LOSS_WEIGHT: 1.0
+    BBOX_REG_WEIGHTS:
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    BOUNDARY_THRESH: -1
+    CONV_DIMS:
+    - -1
+    HEAD_NAME: StandardRPNHead
+    IN_FEATURES:
+    - res4
+    IOU_LABELS:
+    - 0
+    - -1
+    - 1
+    IOU_THRESHOLDS:
+    - 0.3
+    - 0.7
+    LOSS_WEIGHT: 1.0
+    NMS_THRESH: 0.7
+    POSITIVE_FRACTION: 0.5
+    POST_NMS_TOPK_TEST: 300
+    POST_NMS_TOPK_TRAIN: 2000
+    PRE_NMS_TOPK_TEST: 6000
+    PRE_NMS_TOPK_TRAIN: 12000
+    SMOOTH_L1_BETA: 0.0
+  SEM_SEG_HEAD:
+    COMMON_STRIDE: 4
+    CONVS_DIM: 128
+    IGNORE_VALUE: 255
+    IN_FEATURES:
+    - p2
+    - p3
+    - p4
+    - p5
+    LOSS_WEIGHT: 1.0
+    NAME: SemSegFPNHead
+    NORM: GN
+    NUM_CLASSES: 54
+  WEIGHTS: detectron2://ImageNetPretrained/MSRA/R-50.pkl
+OUTPUT_DIR: ./checkpoint/foggy
+SEED: -1
+SOLVER:
+  AMP:
+    ENABLED: false
+  BASE_LR: 0.0001
+  BIAS_LR_FACTOR: 1.0
+  CHECKPOINT_PERIOD: 5000
+  CLIP_GRADIENTS:
+    CLIP_TYPE: value
+    CLIP_VALUE: 1.0
+    ENABLED: false
+    NORM_TYPE: 2.0
+  GAMMA: 0.1
+  IMS_PER_BATCH: 1
+  LR_SCHEDULER_NAME: WarmupMultiStepLR
+  MAX_ITER: 70000
+  MOMENTUM: 0.9
+  NESTEROV: false
+  REFERENCE_WORLD_SIZE: 0
+  STEPS: []
+  WARMUP_FACTOR: 0.001
+  WARMUP_ITERS: 0
+  WARMUP_METHOD: linear
+  WEIGHT_DECAY: 0.0001
+  WEIGHT_DECAY_BIAS: 0.0001
+  WEIGHT_DECAY_NORM: 0.0
+SOURCE_FREE:
+  MODE: true
+  PETS:
+    BETA: 0.5
+    CONF_THRESH: 0.5
+    EMA_KEEP_RATE: 0.999
+    ENABLED: true
+    EPOCH_ITERS: 0
+    EXCHANGE_PERIOD: 2
+    IOU_THRESH: 0.5
+    TOTAL_EPOCHS: 10
+    WARMUP_EPOCHS: 2
+  TYPE: true
+TEST:
+  AUG:
+    ENABLED: false
+    FLIP: true
+    MAX_SIZE: 4000
+    MIN_SIZES:
+    - 400
+    - 500
+    - 600
+    - 700
+    - 800
+    - 900
+    - 1000
+    - 1100
+    - 1200
+  DETECTIONS_PER_IMAGE: 100
+  EVAL_PERIOD: 2000
+  EXPECTED_RESULTS: []
+  KEYPOINT_OKS_SIGMAS: []
+  PRECISE_BN:
+    ENABLED: false
+    NUM_ITER: 200
+VERSION: 2
+VIS_PERIOD: 0
+
+[02/23 01:04:01] detectron2 INFO: Full config saved to ./checkpoint/foggy/config.yaml
+[02/23 01:04:01] d2.utils.env INFO: Using a generated random seed 1628891
+[02/23 01:04:07] detectron2 INFO: Model:
+student_sfda_RCNN(
+  (backbone): ResNet(
+    (stem): BasicStem(
+      (conv1): Conv2d(
+        3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False
+        (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+      )
+    )
+    (res2): Sequential(
+      (0): BottleneckBlock(
+        (shortcut): Conv2d(
+          64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv1): Conv2d(
+          64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+      )
+      (1): BottleneckBlock(
+        (conv1): Conv2d(
+          256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+      )
+      (2): BottleneckBlock(
+        (conv1): Conv2d(
+          256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=64, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+      )
+    )
+    (res3): Sequential(
+      (0): BottleneckBlock(
+        (shortcut): Conv2d(
+          256, 512, kernel_size=(1, 1), stride=(2, 2), bias=False
+          (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+        )
+        (conv1): Conv2d(
+          256, 128, kernel_size=(1, 1), stride=(2, 2), bias=False
+          (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+        )
+      )
+      (1): BottleneckBlock(
+        (conv1): Conv2d(
+          512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+        )
+      )
+      (2): BottleneckBlock(
+        (conv1): Conv2d(
+          512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+        )
+      )
+      (3): BottleneckBlock(
+        (conv1): Conv2d(
+          512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=128, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+        )
+      )
+    )
+    (res4): Sequential(
+      (0): BottleneckBlock(
+        (shortcut): Conv2d(
+          512, 1024, kernel_size=(1, 1), stride=(2, 2), bias=False
+          (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+        )
+        (conv1): Conv2d(
+          512, 256, kernel_size=(1, 1), stride=(2, 2), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+        )
+      )
+      (1): BottleneckBlock(
+        (conv1): Conv2d(
+          1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+        )
+      )
+      (2): BottleneckBlock(
+        (conv1): Conv2d(
+          1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+        )
+      )
+      (3): BottleneckBlock(
+        (conv1): Conv2d(
+          1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+        )
+      )
+      (4): BottleneckBlock(
+        (conv1): Conv2d(
+          1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+        )
+      )
+      (5): BottleneckBlock(
+        (conv1): Conv2d(
+          1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=256, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=1024, eps=1e-05)
+        )
+      )
+    )
+  )
+  (proposal_generator): RPN(
+    (rpn_head): StandardRPNHead(
+      (conv): Conv2d(
+        1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)
+        (activation): ReLU()
+      )
+      (objectness_logits): Conv2d(1024, 9, kernel_size=(1, 1), stride=(1, 1))
+      (anchor_deltas): Conv2d(1024, 36, kernel_size=(1, 1), stride=(1, 1))
+    )
+    (anchor_generator): DefaultAnchorGenerator(
+      (cell_anchors): BufferList()
+    )
+  )
+  (roi_heads): Res5ROIHeads(
+    (pooler): ROIPooler(
+      (level_poolers): ModuleList(
+        (0): ROIAlign(output_size=(14, 14), spatial_scale=0.0625, sampling_ratio=0, aligned=True)
+      )
+    )
+    (res5): Sequential(
+      (0): BottleneckBlock(
+        (shortcut): Conv2d(
+          1024, 2048, kernel_size=(1, 1), stride=(2, 2), bias=False
+          (norm): FrozenBatchNorm2d(num_features=2048, eps=1e-05)
+        )
+        (conv1): Conv2d(
+          1024, 512, kernel_size=(1, 1), stride=(2, 2), bias=False
+          (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=2048, eps=1e-05)
+        )
+      )
+      (1): BottleneckBlock(
+        (conv1): Conv2d(
+          2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=2048, eps=1e-05)
+        )
+      )
+      (2): BottleneckBlock(
+        (conv1): Conv2d(
+          2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+        )
+        (conv2): Conv2d(
+          512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=512, eps=1e-05)
+        )
+        (conv3): Conv2d(
+          512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False
+          (norm): FrozenBatchNorm2d(num_features=2048, eps=1e-05)
+        )
+      )
+    )
+    (box_predictor): FastRCNNOutputLayers(
+      (cls_score): Linear(in_features=2048, out_features=9, bias=True)
+      (bbox_pred): Linear(in_features=2048, out_features=32, bias=True)
+    )
+  )
+  (GraphCN): GCN(
+    (graph): Feat2Graph(
+      (wq): Linear(in_features=2048, out_features=2048, bias=True)
+      (wk): Linear(in_features=2048, out_features=2048, bias=True)
+    )
+    (gc1): GraphConvolution (2048 -> 512)
+    (gc2): GraphConvolution (512 -> 512)
+    (gc3): GraphConvolution (512 -> 2048)
+  )
+  (Graph_conloss): GraphConLoss(
+    (head_1): Sequential(
+      (0): Linear(in_features=2048, out_features=2048, bias=True)
+      (1): ReLU(inplace=True)
+      (2): Linear(in_features=2048, out_features=2048, bias=True)
+    )
+    (head_2): Sequential(
+      (0): Linear(in_features=2048, out_features=2048, bias=True)
+      (1): ReLU(inplace=True)
+      (2): Linear(in_features=2048, out_features=2048, bias=True)
+    )
+  )
+)
+[02/23 01:04:07] detectron2 INFO: Models built. Starting training...
+[02/23 01:04:09] d2.data.build INFO: Removed 0 images with no usable annotations. 2965 images left.
+[02/23 01:04:09] d2.data.build INFO: Distribution of instances among all 8 categories:
+[36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
+|:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
+|   person   | 17994        |   rider    | 1807         |    car     | 27155        |
+|   truck    | 489          |    bus     | 385          |   train    | 171          |
+| motorcycle | 739          |  bicycle   | 3729         |            |              |
+|   total    | 52469        |            |              |            |              |[0m
+[02/23 01:04:09] d2.data.detection_utils INFO: Augmentations used in training: [RandomApply(
+    p=0.8
+    ColorJitter(brightness=[0.6, 1.4], contrast=[0.6, 1.4], saturation=[0.6, 1.4], hue=[-0.1, 0.1])
+), RandomGrayscale(p=0.2), RandomApply(
+    p=0.5
+    <detectron2.data.transforms.augmentation_impl.GaussianBlur object at 0x7fad49c85668>
+), Compose(
+    ToTensor()
+    RandomErasing(p=0.7, scale=(0.05, 0.2), ratio=(0.3, 3.3), value=random, inplace=False)
+    RandomErasing(p=0.5, scale=(0.02, 0.2), ratio=(0.1, 6), value=random, inplace=False)
+    RandomErasing(p=0.3, scale=(0.02, 0.2), ratio=(0.05, 8), value=random, inplace=False)
+    ToPILImage()
+)]
+[02/23 01:04:09] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 01:04:09] d2.data.build INFO: Using training sampler TrainingSampler
+[02/23 01:04:09] d2.data.common INFO: Serializing 2965 elements to byte tensors and concatenating them all ...
+[02/23 01:04:09] d2.data.common INFO: Serialized dataset takes 4.11 MiB
+[02/23 01:04:09] fvcore.common.checkpoint INFO: [Checkpointer] Loading from /root/autodl-tmp/model_final.pth ...
+[02/23 01:04:09] fvcore.common.checkpoint WARNING: Some model parameters or buffers are not found in the checkpoint:
+[34mGraphCN.gc1.{bias, weight}[0m
+[34mGraphCN.gc2.{bias, weight}[0m
+[34mGraphCN.gc3.{bias, weight}[0m
+[34mGraphCN.graph.wk.{bias, weight}[0m
+[34mGraphCN.graph.wq.{bias, weight}[0m
+[34mGraph_conloss.head_1.0.{bias, weight}[0m
+[34mGraph_conloss.head_1.2.{bias, weight}[0m
+[34mGraph_conloss.head_2.0.{bias, weight}[0m
+[34mGraph_conloss.head_2.2.{bias, weight}[0m
+[02/23 01:04:09] fvcore.common.checkpoint INFO: [Checkpointer] Loading from /root/autodl-tmp/model_final.pth ...
+[02/23 01:04:09] fvcore.common.checkpoint INFO: [Checkpointer] Loading from /root/autodl-tmp/model_final.pth ...
+[02/23 01:04:10] detectron2 INFO: Starting training from iteration 0
+[02/23 01:04:10] d2.data.build INFO: Distribution of instances among all 8 categories:
+[36m|  category  | #instances   |  category  | #instances   |  category  | #instances   |
+|:----------:|:-------------|:----------:|:-------------|:----------:|:-------------|
+|   person   | 3419         |   rider    | 556          |    car     | 4667         |
+|   truck    | 93           |    bus     | 98           |   train    | 23           |
+| motorcycle | 149          |  bicycle   | 1175         |            |              |
+|   total    | 10180        |            |              |            |              |[0m
+[02/23 01:04:10] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 01:04:10] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 01:04:10] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 01:04:10] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 01:04:48] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 01:04:48] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 01:04:48] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 01:04:48] d2.evaluation.testing INFO: copypaste: 16.1020,26.5147,16.9521
+[02/23 01:04:48] detectron2 INFO: AP for person: 31.691556807863165
+[02/23 01:04:48] detectron2 INFO: AP for rider: 39.16751890419787
+[02/23 01:04:48] detectron2 INFO: AP for car: 36.086357171952166
+[02/23 01:04:48] detectron2 INFO: AP for truck: 18.504190844616378
+[02/23 01:04:48] detectron2 INFO: AP for bus: 25.324675324675326
+[02/23 01:04:48] detectron2 INFO: AP for train: 9.090909090909092
+[02/23 01:04:48] detectron2 INFO: AP for motorcycle: 21.10299047429387
+[02/23 01:04:48] detectron2 INFO: AP for bicycle: 31.14937671330722
+[02/23 01:04:50] d2.data.build INFO: Removed 0 images with no usable annotations. 2965 images left.
+[02/23 01:04:50] d2.data.detection_utils INFO: Augmentations used in training: [RandomApply(
+    p=0.8
+    ColorJitter(brightness=[0.6, 1.4], contrast=[0.6, 1.4], saturation=[0.6, 1.4], hue=[-0.1, 0.1])
+), RandomGrayscale(p=0.2), RandomApply(
+    p=0.5
+    <detectron2.data.transforms.augmentation_impl.GaussianBlur object at 0x7faf811872e8>
+), Compose(
+    ToTensor()
+    RandomErasing(p=0.7, scale=(0.05, 0.2), ratio=(0.3, 3.3), value=random, inplace=False)
+    RandomErasing(p=0.5, scale=(0.02, 0.2), ratio=(0.1, 6), value=random, inplace=False)
+    RandomErasing(p=0.3, scale=(0.02, 0.2), ratio=(0.05, 8), value=random, inplace=False)
+    ToPILImage()
+)]
+[02/23 01:04:50] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 01:04:50] d2.data.build INFO: Using training sampler TrainingSampler
+[02/23 01:04:50] d2.data.common INFO: Serializing 2965 elements to byte tensors and concatenating them all ...
+[02/23 01:04:50] d2.data.common INFO: Serialized dataset takes 4.11 MiB
+[02/23 01:39:28] fvcore.common.checkpoint INFO: Saving checkpoint to ./checkpoint/foggy/model_0002964.pth
+[02/23 01:39:29] detectron2 INFO: [EPOCH 1][STUDENT] Evaluation start
+[02/23 01:39:29] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 01:39:29] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 01:39:29] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 01:39:29] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 01:40:12] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 01:40:12] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 01:40:12] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 01:40:12] d2.evaluation.testing INFO: copypaste: 20.3490,35.3611,20.0689
+[02/23 01:40:12] detectron2 INFO: AP for person: 37.22979490273097
+[02/23 01:40:12] detectron2 INFO: AP for rider: 46.8754112352754
+[02/23 01:40:12] detectron2 INFO: AP for car: 51.94293783460826
+[02/23 01:40:12] detectron2 INFO: AP for truck: 26.459645964596458
+[02/23 01:40:12] detectron2 INFO: AP for bus: 38.59146964570952
+[02/23 01:40:12] detectron2 INFO: AP for train: 16.97591753310228
+[02/23 01:40:12] detectron2 INFO: AP for motorcycle: 27.181371454098723
+[02/23 01:40:12] detectron2 INFO: AP for bicycle: 37.632183851242935
+[02/23 01:40:12] detectron2 INFO: [EPOCH 1][TEACHER] Evaluation start
+[02/23 01:40:12] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 01:40:12] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 01:40:12] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 01:40:12] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 01:40:55] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 01:40:55] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 01:40:55] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 01:40:55] d2.evaluation.testing INFO: copypaste: 20.0561,35.1232,19.2427
+[02/23 01:40:55] detectron2 INFO: AP for person: 36.81357285573418
+[02/23 01:40:55] detectron2 INFO: AP for rider: 46.92736581025773
+[02/23 01:40:55] detectron2 INFO: AP for car: 51.57611859479272
+[02/23 01:40:55] detectron2 INFO: AP for truck: 25.067318997231393
+[02/23 01:40:55] detectron2 INFO: AP for bus: 37.35297528861855
+[02/23 01:40:55] detectron2 INFO: AP for train: 17.574137092853668
+[02/23 01:40:55] detectron2 INFO: AP for motorcycle: 27.363189635916907
+[02/23 01:40:55] detectron2 INFO: AP for bicycle: 38.31090701989371
+[02/23 01:40:57] d2.data.build INFO: Removed 0 images with no usable annotations. 2965 images left.
+[02/23 01:40:57] d2.data.detection_utils INFO: Augmentations used in training: [RandomApply(
+    p=0.8
+    ColorJitter(brightness=[0.6, 1.4], contrast=[0.6, 1.4], saturation=[0.6, 1.4], hue=[-0.1, 0.1])
+), RandomGrayscale(p=0.2), RandomApply(
+    p=0.5
+    <detectron2.data.transforms.augmentation_impl.GaussianBlur object at 0x7fafd65e2080>
+), Compose(
+    ToTensor()
+    RandomErasing(p=0.7, scale=(0.05, 0.2), ratio=(0.3, 3.3), value=random, inplace=False)
+    RandomErasing(p=0.5, scale=(0.02, 0.2), ratio=(0.1, 6), value=random, inplace=False)
+    RandomErasing(p=0.3, scale=(0.02, 0.2), ratio=(0.05, 8), value=random, inplace=False)
+    ToPILImage()
+)]
+[02/23 01:40:57] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 01:40:57] d2.data.build INFO: Using training sampler TrainingSampler
+[02/23 01:40:57] d2.data.common INFO: Serializing 2965 elements to byte tensors and concatenating them all ...
+[02/23 01:40:57] d2.data.common INFO: Serialized dataset takes 4.11 MiB
+[02/23 02:15:29] fvcore.common.checkpoint INFO: Saving checkpoint to ./checkpoint/foggy/model_0005929.pth
+[02/23 02:15:29] detectron2 INFO: [EPOCH 2][STUDENT] Evaluation start
+[02/23 02:15:30] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 02:15:30] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 02:15:30] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 02:15:30] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 02:16:11] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 02:16:11] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 02:16:11] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 02:16:11] d2.evaluation.testing INFO: copypaste: 19.8516,34.8692,19.3946
+[02/23 02:16:11] detectron2 INFO: AP for person: 36.550133249817875
+[02/23 02:16:11] detectron2 INFO: AP for rider: 43.177933177933184
+[02/23 02:16:11] detectron2 INFO: AP for car: 51.890879735110516
+[02/23 02:16:11] detectron2 INFO: AP for truck: 24.652509652509654
+[02/23 02:16:11] detectron2 INFO: AP for bus: 39.60647195941313
+[02/23 02:16:11] detectron2 INFO: AP for train: 19.925457786420353
+[02/23 02:16:11] detectron2 INFO: AP for motorcycle: 25.7638679150307
+[02/23 02:16:11] detectron2 INFO: AP for bicycle: 37.38658019406373
+[02/23 02:16:11] detectron2 INFO: [EPOCH 2][TEACHER] Evaluation start
+[02/23 02:16:12] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 02:16:12] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 02:16:12] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 02:16:12] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 02:16:53] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 02:16:53] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 02:16:53] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 02:16:53] d2.evaluation.testing INFO: copypaste: 20.4564,35.1792,20.1658
+[02/23 02:16:53] detectron2 INFO: AP for person: 36.26273542419221
+[02/23 02:16:53] detectron2 INFO: AP for rider: 42.569594247560346
+[02/23 02:16:53] detectron2 INFO: AP for car: 51.692978114291336
+[02/23 02:16:53] detectron2 INFO: AP for truck: 26.200230745685293
+[02/23 02:16:53] detectron2 INFO: AP for bus: 37.858851674641144
+[02/23 02:16:53] detectron2 INFO: AP for train: 23.13131313131313
+[02/23 02:16:53] detectron2 INFO: AP for motorcycle: 25.786149554959405
+[02/23 02:16:53] detectron2 INFO: AP for bicycle: 37.931524919165696
+[02/23 02:16:55] d2.data.build INFO: Removed 0 images with no usable annotations. 2965 images left.
+[02/23 02:16:55] d2.data.detection_utils INFO: Augmentations used in training: [RandomApply(
+    p=0.8
+    ColorJitter(brightness=[0.6, 1.4], contrast=[0.6, 1.4], saturation=[0.6, 1.4], hue=[-0.1, 0.1])
+), RandomGrayscale(p=0.2), RandomApply(
+    p=0.5
+    <detectron2.data.transforms.augmentation_impl.GaussianBlur object at 0x7faf7873d400>
+), Compose(
+    ToTensor()
+    RandomErasing(p=0.7, scale=(0.05, 0.2), ratio=(0.3, 3.3), value=random, inplace=False)
+    RandomErasing(p=0.5, scale=(0.02, 0.2), ratio=(0.1, 6), value=random, inplace=False)
+    RandomErasing(p=0.3, scale=(0.02, 0.2), ratio=(0.05, 8), value=random, inplace=False)
+    ToPILImage()
+)]
+[02/23 02:16:55] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 02:16:55] d2.data.build INFO: Using training sampler TrainingSampler
+[02/23 02:16:55] d2.data.common INFO: Serializing 2965 elements to byte tensors and concatenating them all ...
+[02/23 02:16:55] d2.data.common INFO: Serialized dataset takes 4.11 MiB
+[02/23 02:51:27] fvcore.common.checkpoint INFO: Saving checkpoint to ./checkpoint/foggy/model_0008894.pth
+[02/23 02:51:28] detectron2 INFO: [EPOCH 3][STUDENT] Evaluation start
+[02/23 02:51:28] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 02:51:28] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 02:51:28] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 02:51:28] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 02:52:10] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 02:52:10] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 02:52:10] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 02:52:10] d2.evaluation.testing INFO: copypaste: 19.9661,34.2010,19.9132
+[02/23 02:52:10] detectron2 INFO: AP for person: 36.6664124194906
+[02/23 02:52:10] detectron2 INFO: AP for rider: 42.84192179018954
+[02/23 02:52:10] detectron2 INFO: AP for car: 51.23643686850134
+[02/23 02:52:10] detectron2 INFO: AP for truck: 22.424242424242426
+[02/23 02:52:10] detectron2 INFO: AP for bus: 34.3749055419536
+[02/23 02:52:10] detectron2 INFO: AP for train: 21.81818181818182
+[02/23 02:52:10] detectron2 INFO: AP for motorcycle: 26.594318470748675
+[02/23 02:52:10] detectron2 INFO: AP for bicycle: 37.65150788722472
+[02/23 02:52:10] detectron2 INFO: [EPOCH 3][TEACHER] Evaluation start
+[02/23 02:52:10] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 02:52:10] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 02:52:10] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 02:52:10] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 02:52:52] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 02:52:52] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 02:52:52] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 02:52:52] d2.evaluation.testing INFO: copypaste: 20.0685,34.6408,19.8057
+[02/23 02:52:52] detectron2 INFO: AP for person: 36.60587783375513
+[02/23 02:52:52] detectron2 INFO: AP for rider: 43.01965738808944
+[02/23 02:52:52] detectron2 INFO: AP for car: 51.77754452978988
+[02/23 02:52:52] detectron2 INFO: AP for truck: 24.68098653776184
+[02/23 02:52:52] detectron2 INFO: AP for bus: 38.413273001508294
+[02/23 02:52:52] detectron2 INFO: AP for train: 18.87878787878788
+[02/23 02:52:52] detectron2 INFO: AP for motorcycle: 26.206642901601313
+[02/23 02:52:52] detectron2 INFO: AP for bicycle: 37.543756695619855
+[02/23 02:52:54] d2.data.build INFO: Removed 0 images with no usable annotations. 2965 images left.
+[02/23 02:52:54] d2.data.detection_utils INFO: Augmentations used in training: [RandomApply(
+    p=0.8
+    ColorJitter(brightness=[0.6, 1.4], contrast=[0.6, 1.4], saturation=[0.6, 1.4], hue=[-0.1, 0.1])
+), RandomGrayscale(p=0.2), RandomApply(
+    p=0.5
+    <detectron2.data.transforms.augmentation_impl.GaussianBlur object at 0x7fad49c852e8>
+), Compose(
+    ToTensor()
+    RandomErasing(p=0.7, scale=(0.05, 0.2), ratio=(0.3, 3.3), value=random, inplace=False)
+    RandomErasing(p=0.5, scale=(0.02, 0.2), ratio=(0.1, 6), value=random, inplace=False)
+    RandomErasing(p=0.3, scale=(0.02, 0.2), ratio=(0.05, 8), value=random, inplace=False)
+    ToPILImage()
+)]
+[02/23 02:52:54] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 02:52:54] d2.data.build INFO: Using training sampler TrainingSampler
+[02/23 02:52:54] d2.data.common INFO: Serializing 2965 elements to byte tensors and concatenating them all ...
+[02/23 02:52:54] d2.data.common INFO: Serialized dataset takes 4.11 MiB
+[02/23 03:27:28] fvcore.common.checkpoint INFO: Saving checkpoint to ./checkpoint/foggy/model_0011859.pth
+[02/23 03:27:30] detectron2 INFO: [EPOCH 4][STUDENT] Evaluation start
+[02/23 03:27:30] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 03:27:30] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 03:27:30] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 03:27:30] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 03:28:09] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 03:28:09] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 03:28:09] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 03:28:09] d2.evaluation.testing INFO: copypaste: 16.1020,26.5147,16.9521
+[02/23 03:28:09] detectron2 INFO: AP for person: 31.691556807863165
+[02/23 03:28:09] detectron2 INFO: AP for rider: 39.16751890419787
+[02/23 03:28:09] detectron2 INFO: AP for car: 36.086357171952166
+[02/23 03:28:09] detectron2 INFO: AP for truck: 18.504190844616378
+[02/23 03:28:09] detectron2 INFO: AP for bus: 25.324675324675326
+[02/23 03:28:09] detectron2 INFO: AP for train: 9.090909090909092
+[02/23 03:28:09] detectron2 INFO: AP for motorcycle: 21.10299047429387
+[02/23 03:28:09] detectron2 INFO: AP for bicycle: 31.14937671330722
+[02/23 03:28:09] detectron2 INFO: [EPOCH 4][TEACHER] Evaluation start
+[02/23 03:28:09] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 03:28:09] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 03:28:09] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 03:28:09] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 03:28:50] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 03:28:50] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 03:28:50] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 03:28:50] d2.evaluation.testing INFO: copypaste: 20.3601,34.9388,19.8048
+[02/23 03:28:50] detectron2 INFO: AP for person: 36.459840470704165
+[02/23 03:28:50] detectron2 INFO: AP for rider: 42.97527041328602
+[02/23 03:28:50] detectron2 INFO: AP for car: 51.83457634400538
+[02/23 03:28:50] detectron2 INFO: AP for truck: 25.780885780885782
+[02/23 03:28:50] detectron2 INFO: AP for bus: 38.91943828529194
+[02/23 03:28:50] detectron2 INFO: AP for train: 18.150252525252526
+[02/23 03:28:50] detectron2 INFO: AP for motorcycle: 27.089577089577087
+[02/23 03:28:50] detectron2 INFO: AP for bicycle: 38.300750561395844
+[02/23 03:28:52] d2.data.build INFO: Removed 0 images with no usable annotations. 2965 images left.
+[02/23 03:28:52] d2.data.detection_utils INFO: Augmentations used in training: [RandomApply(
+    p=0.8
+    ColorJitter(brightness=[0.6, 1.4], contrast=[0.6, 1.4], saturation=[0.6, 1.4], hue=[-0.1, 0.1])
+), RandomGrayscale(p=0.2), RandomApply(
+    p=0.5
+    <detectron2.data.transforms.augmentation_impl.GaussianBlur object at 0x7faefad829b0>
+), Compose(
+    ToTensor()
+    RandomErasing(p=0.7, scale=(0.05, 0.2), ratio=(0.3, 3.3), value=random, inplace=False)
+    RandomErasing(p=0.5, scale=(0.02, 0.2), ratio=(0.1, 6), value=random, inplace=False)
+    RandomErasing(p=0.3, scale=(0.02, 0.2), ratio=(0.05, 8), value=random, inplace=False)
+    ToPILImage()
+)]
+[02/23 03:28:52] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 03:28:52] d2.data.build INFO: Using training sampler TrainingSampler
+[02/23 03:28:52] d2.data.common INFO: Serializing 2965 elements to byte tensors and concatenating them all ...
+[02/23 03:28:52] d2.data.common INFO: Serialized dataset takes 4.11 MiB
+[02/23 04:03:29] fvcore.common.checkpoint INFO: Saving checkpoint to ./checkpoint/foggy/model_0014824.pth
+[02/23 04:03:30] detectron2 INFO: [EPOCH 5][STUDENT] Evaluation start
+[02/23 04:03:30] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 04:03:30] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 04:03:30] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 04:03:30] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 04:04:15] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 04:04:15] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 04:04:15] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 04:04:15] d2.evaluation.testing INFO: copypaste: 20.3178,35.4825,19.6818
+[02/23 04:04:15] detectron2 INFO: AP for person: 35.852637994523825
+[02/23 04:04:15] detectron2 INFO: AP for rider: 46.02008708540008
+[02/23 04:04:15] detectron2 INFO: AP for car: 52.3978254039953
+[02/23 04:04:15] detectron2 INFO: AP for truck: 26.2040467369621
+[02/23 04:04:15] detectron2 INFO: AP for bus: 39.32722720601509
+[02/23 04:04:15] detectron2 INFO: AP for train: 20.4837125049891
+[02/23 04:04:15] detectron2 INFO: AP for motorcycle: 26.695835358936964
+[02/23 04:04:15] detectron2 INFO: AP for bicycle: 36.87850569047979
+[02/23 04:04:15] detectron2 INFO: [EPOCH 5][TEACHER] Evaluation start
+[02/23 04:04:16] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 04:04:16] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 04:04:16] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 04:04:16] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 04:04:59] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 04:04:59] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 04:04:59] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 04:04:59] d2.evaluation.testing INFO: copypaste: 20.3684,35.3291,20.5434
+[02/23 04:04:59] detectron2 INFO: AP for person: 35.94849766444037
+[02/23 04:04:59] detectron2 INFO: AP for rider: 46.10028504591333
+[02/23 04:04:59] detectron2 INFO: AP for car: 52.27775643211575
+[02/23 04:04:59] detectron2 INFO: AP for truck: 24.298095042426894
+[02/23 04:04:59] detectron2 INFO: AP for bus: 38.75306433445968
+[02/23 04:04:59] detectron2 INFO: AP for train: 21.74586776859504
+[02/23 04:04:59] detectron2 INFO: AP for motorcycle: 27.217507556382238
+[02/23 04:04:59] detectron2 INFO: AP for bicycle: 36.291899773637674
+[02/23 04:05:01] d2.data.build INFO: Removed 0 images with no usable annotations. 2965 images left.
+[02/23 04:05:01] d2.data.detection_utils INFO: Augmentations used in training: [RandomApply(
+    p=0.8
+    ColorJitter(brightness=[0.6, 1.4], contrast=[0.6, 1.4], saturation=[0.6, 1.4], hue=[-0.1, 0.1])
+), RandomGrayscale(p=0.2), RandomApply(
+    p=0.5
+    <detectron2.data.transforms.augmentation_impl.GaussianBlur object at 0x7faf81006c18>
+), Compose(
+    ToTensor()
+    RandomErasing(p=0.7, scale=(0.05, 0.2), ratio=(0.3, 3.3), value=random, inplace=False)
+    RandomErasing(p=0.5, scale=(0.02, 0.2), ratio=(0.1, 6), value=random, inplace=False)
+    RandomErasing(p=0.3, scale=(0.02, 0.2), ratio=(0.05, 8), value=random, inplace=False)
+    ToPILImage()
+)]
+[02/23 04:05:01] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 04:05:01] d2.data.build INFO: Using training sampler TrainingSampler
+[02/23 04:05:01] d2.data.common INFO: Serializing 2965 elements to byte tensors and concatenating them all ...
+[02/23 04:05:01] d2.data.common INFO: Serialized dataset takes 4.11 MiB
+[02/23 04:39:33] fvcore.common.checkpoint INFO: Saving checkpoint to ./checkpoint/foggy/model_0017789.pth
+[02/23 04:39:34] detectron2 INFO: [EPOCH 6][STUDENT] Evaluation start
+[02/23 04:39:35] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 04:39:35] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 04:39:35] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 04:39:35] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 04:40:16] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 04:40:16] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 04:40:16] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 04:40:16] d2.evaluation.testing INFO: copypaste: 19.9435,34.0195,20.0159
+[02/23 04:40:16] detectron2 INFO: AP for person: 36.37329171247047
+[02/23 04:40:16] detectron2 INFO: AP for rider: 46.520235361220465
+[02/23 04:40:16] detectron2 INFO: AP for car: 51.65152279263053
+[02/23 04:40:16] detectron2 INFO: AP for truck: 26.2830389949034
+[02/23 04:40:16] detectron2 INFO: AP for bus: 38.35127591706539
+[02/23 04:40:16] detectron2 INFO: AP for train: 8.422865013774105
+[02/23 04:40:16] detectron2 INFO: AP for motorcycle: 27.105122016626442
+[02/23 04:40:16] detectron2 INFO: AP for bicycle: 37.44884825039564
+[02/23 04:40:16] detectron2 INFO: [EPOCH 6][TEACHER] Evaluation start
+[02/23 04:40:16] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 04:40:16] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 04:40:16] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 04:40:16] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 04:40:59] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 04:40:59] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 04:40:59] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 04:40:59] d2.evaluation.testing INFO: copypaste: 19.8898,35.5800,19.8659
+[02/23 04:40:59] detectron2 INFO: AP for person: 36.73275574061864
+[02/23 04:40:59] detectron2 INFO: AP for rider: 41.706848799584044
+[02/23 04:40:59] detectron2 INFO: AP for car: 52.407803037447145
+[02/23 04:40:59] detectron2 INFO: AP for truck: 25.55901759530792
+[02/23 04:40:59] detectron2 INFO: AP for bus: 43.34298522368116
+[02/23 04:40:59] detectron2 INFO: AP for train: 19.72184494484511
+[02/23 04:40:59] detectron2 INFO: AP for motorcycle: 29.181165724227924
+[02/23 04:40:59] detectron2 INFO: AP for bicycle: 35.987719377492795
+[02/23 04:41:01] d2.data.build INFO: Removed 0 images with no usable annotations. 2965 images left.
+[02/23 04:41:01] d2.data.detection_utils INFO: Augmentations used in training: [RandomApply(
+    p=0.8
+    ColorJitter(brightness=[0.6, 1.4], contrast=[0.6, 1.4], saturation=[0.6, 1.4], hue=[-0.1, 0.1])
+), RandomGrayscale(p=0.2), RandomApply(
+    p=0.5
+    <detectron2.data.transforms.augmentation_impl.GaussianBlur object at 0x7fafd66bb5f8>
+), Compose(
+    ToTensor()
+    RandomErasing(p=0.7, scale=(0.05, 0.2), ratio=(0.3, 3.3), value=random, inplace=False)
+    RandomErasing(p=0.5, scale=(0.02, 0.2), ratio=(0.1, 6), value=random, inplace=False)
+    RandomErasing(p=0.3, scale=(0.02, 0.2), ratio=(0.05, 8), value=random, inplace=False)
+    ToPILImage()
+)]
+[02/23 04:41:01] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 04:41:01] d2.data.build INFO: Using training sampler TrainingSampler
+[02/23 04:41:01] d2.data.common INFO: Serializing 2965 elements to byte tensors and concatenating them all ...
+[02/23 04:41:01] d2.data.common INFO: Serialized dataset takes 4.11 MiB
+[02/23 05:15:35] fvcore.common.checkpoint INFO: Saving checkpoint to ./checkpoint/foggy/model_0020754.pth
+[02/23 05:15:36] detectron2 INFO: [EPOCH 7][STUDENT] Evaluation start
+[02/23 05:15:37] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 05:15:37] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 05:15:37] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 05:15:37] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 05:16:21] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 05:16:21] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 05:16:21] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 05:16:21] d2.evaluation.testing INFO: copypaste: 18.5484,33.5166,18.5246
+[02/23 05:16:21] detectron2 INFO: AP for person: 35.83532503732645
+[02/23 05:16:21] detectron2 INFO: AP for rider: 41.58165825349519
+[02/23 05:16:21] detectron2 INFO: AP for car: 52.22456722110249
+[02/23 05:16:21] detectron2 INFO: AP for truck: 19.359550174551977
+[02/23 05:16:21] detectron2 INFO: AP for bus: 42.88934642593179
+[02/23 05:16:21] detectron2 INFO: AP for train: 17.688977688977687
+[02/23 05:16:21] detectron2 INFO: AP for motorcycle: 23.542490118577074
+[02/23 05:16:21] detectron2 INFO: AP for bicycle: 35.01099212049976
+[02/23 05:16:21] detectron2 INFO: [EPOCH 7][TEACHER] Evaluation start
+[02/23 05:16:21] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 05:16:21] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 05:16:21] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 05:16:21] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 05:17:05] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 05:17:05] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 05:17:05] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 05:17:05] d2.evaluation.testing INFO: copypaste: 18.9208,34.1616,17.8525
+[02/23 05:17:05] detectron2 INFO: AP for person: 35.369807136148644
+[02/23 05:17:05] detectron2 INFO: AP for rider: 41.69304142312854
+[02/23 05:17:05] detectron2 INFO: AP for car: 52.372476241841106
+[02/23 05:17:05] detectron2 INFO: AP for truck: 20.462464364903386
+[02/23 05:17:05] detectron2 INFO: AP for bus: 39.67035217035217
+[02/23 05:17:05] detectron2 INFO: AP for train: 24.833606053701747
+[02/23 05:17:05] detectron2 INFO: AP for motorcycle: 23.674242424242426
+[02/23 05:17:05] detectron2 INFO: AP for bicycle: 35.21704198309367
+[02/23 05:17:07] d2.data.build INFO: Removed 0 images with no usable annotations. 2965 images left.
+[02/23 05:17:07] d2.data.detection_utils INFO: Augmentations used in training: [RandomApply(
+    p=0.8
+    ColorJitter(brightness=[0.6, 1.4], contrast=[0.6, 1.4], saturation=[0.6, 1.4], hue=[-0.1, 0.1])
+), RandomGrayscale(p=0.2), RandomApply(
+    p=0.5
+    <detectron2.data.transforms.augmentation_impl.GaussianBlur object at 0x7faf7873d5c0>
+), Compose(
+    ToTensor()
+    RandomErasing(p=0.7, scale=(0.05, 0.2), ratio=(0.3, 3.3), value=random, inplace=False)
+    RandomErasing(p=0.5, scale=(0.02, 0.2), ratio=(0.1, 6), value=random, inplace=False)
+    RandomErasing(p=0.3, scale=(0.02, 0.2), ratio=(0.05, 8), value=random, inplace=False)
+    ToPILImage()
+)]
+[02/23 05:17:07] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 05:17:07] d2.data.build INFO: Using training sampler TrainingSampler
+[02/23 05:17:07] d2.data.common INFO: Serializing 2965 elements to byte tensors and concatenating them all ...
+[02/23 05:17:07] d2.data.common INFO: Serialized dataset takes 4.11 MiB
+[02/23 05:51:43] fvcore.common.checkpoint INFO: Saving checkpoint to ./checkpoint/foggy/model_0023719.pth
+[02/23 05:51:44] detectron2 INFO: [EPOCH 8][STUDENT] Evaluation start
+[02/23 05:51:45] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 05:51:45] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 05:51:45] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 05:51:45] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 05:52:28] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 05:52:28] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 05:52:28] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 05:52:28] d2.evaluation.testing INFO: copypaste: 19.7395,35.7577,19.1316
+[02/23 05:52:28] detectron2 INFO: AP for person: 35.71579078275252
+[02/23 05:52:28] detectron2 INFO: AP for rider: 41.28542830734771
+[02/23 05:52:28] detectron2 INFO: AP for car: 52.47185716239957
+[02/23 05:52:28] detectron2 INFO: AP for truck: 24.186212018070428
+[02/23 05:52:28] detectron2 INFO: AP for bus: 42.80142651187496
+[02/23 05:52:28] detectron2 INFO: AP for train: 26.217418944691673
+[02/23 05:52:28] detectron2 INFO: AP for motorcycle: 27.975206611570247
+[02/23 05:52:28] detectron2 INFO: AP for bicycle: 35.40811939294566
+[02/23 05:52:28] detectron2 INFO: [EPOCH 8][TEACHER] Evaluation start
+[02/23 05:52:28] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 05:52:28] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 05:52:28] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 05:52:28] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 05:53:12] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 05:53:12] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 05:53:12] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 05:53:12] d2.evaluation.testing INFO: copypaste: 18.6259,33.6228,18.1379
+[02/23 05:53:12] detectron2 INFO: AP for person: 35.251226907167904
+[02/23 05:53:12] detectron2 INFO: AP for rider: 41.159634309991254
+[02/23 05:53:12] detectron2 INFO: AP for car: 52.34498502911791
+[02/23 05:53:12] detectron2 INFO: AP for truck: 19.538461538461537
+[02/23 05:53:12] detectron2 INFO: AP for bus: 39.72870744750227
+[02/23 05:53:12] detectron2 INFO: AP for train: 21.570247933884296
+[02/23 05:53:12] detectron2 INFO: AP for motorcycle: 24.019262391355415
+[02/23 05:53:12] detectron2 INFO: AP for bicycle: 35.36954112384698
+[02/23 05:53:14] d2.data.build INFO: Removed 0 images with no usable annotations. 2965 images left.
+[02/23 05:53:14] d2.data.detection_utils INFO: Augmentations used in training: [RandomApply(
+    p=0.8
+    ColorJitter(brightness=[0.6, 1.4], contrast=[0.6, 1.4], saturation=[0.6, 1.4], hue=[-0.1, 0.1])
+), RandomGrayscale(p=0.2), RandomApply(
+    p=0.5
+    <detectron2.data.transforms.augmentation_impl.GaussianBlur object at 0x7faf8119dba8>
+), Compose(
+    ToTensor()
+    RandomErasing(p=0.7, scale=(0.05, 0.2), ratio=(0.3, 3.3), value=random, inplace=False)
+    RandomErasing(p=0.5, scale=(0.02, 0.2), ratio=(0.1, 6), value=random, inplace=False)
+    RandomErasing(p=0.3, scale=(0.02, 0.2), ratio=(0.05, 8), value=random, inplace=False)
+    ToPILImage()
+)]
+[02/23 05:53:14] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 05:53:14] d2.data.build INFO: Using training sampler TrainingSampler
+[02/23 05:53:14] d2.data.common INFO: Serializing 2965 elements to byte tensors and concatenating them all ...
+[02/23 05:53:14] d2.data.common INFO: Serialized dataset takes 4.11 MiB
+[02/23 06:27:57] fvcore.common.checkpoint INFO: Saving checkpoint to ./checkpoint/foggy/model_0026684.pth
+[02/23 06:27:58] detectron2 INFO: [EPOCH 9][STUDENT] Evaluation start
+[02/23 06:27:58] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 06:27:58] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 06:27:58] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 06:27:58] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 06:28:44] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 06:28:44] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 06:28:44] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 06:28:44] d2.evaluation.testing INFO: copypaste: 18.4751,32.5689,18.1009
+[02/23 06:28:44] detectron2 INFO: AP for person: 34.90713900189076
+[02/23 06:28:44] detectron2 INFO: AP for rider: 41.36145457594241
+[02/23 06:28:44] detectron2 INFO: AP for car: 52.10289161492676
+[02/23 06:28:44] detectron2 INFO: AP for truck: 17.447199265381084
+[02/23 06:28:44] detectron2 INFO: AP for bus: 37.30711600433885
+[02/23 06:28:44] detectron2 INFO: AP for train: 19.42148760330579
+[02/23 06:28:44] detectron2 INFO: AP for motorcycle: 24.52431289640592
+[02/23 06:28:44] detectron2 INFO: AP for bicycle: 33.47977247155773
+[02/23 06:28:44] detectron2 INFO: [EPOCH 9][TEACHER] Evaluation start
+[02/23 06:28:44] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 06:28:44] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 06:28:44] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 06:28:44] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 06:29:31] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 06:29:31] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 06:29:31] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 06:29:31] d2.evaluation.testing INFO: copypaste: 18.7178,33.2471,18.6126
+[02/23 06:29:31] detectron2 INFO: AP for person: 34.9318859337066
+[02/23 06:29:31] detectron2 INFO: AP for rider: 41.3795931387013
+[02/23 06:29:31] detectron2 INFO: AP for car: 52.26389732903435
+[02/23 06:29:31] detectron2 INFO: AP for truck: 18.154214206845786
+[02/23 06:29:31] detectron2 INFO: AP for bus: 40.73870271692413
+[02/23 06:29:31] detectron2 INFO: AP for train: 17.91626794258373
+[02/23 06:29:31] detectron2 INFO: AP for motorcycle: 27.36120127424475
+[02/23 06:29:31] detectron2 INFO: AP for bicycle: 33.23101602135801
+[02/23 06:29:33] d2.data.build INFO: Removed 0 images with no usable annotations. 2965 images left.
+[02/23 06:29:34] d2.data.detection_utils INFO: Augmentations used in training: [RandomApply(
+    p=0.8
+    ColorJitter(brightness=[0.6, 1.4], contrast=[0.6, 1.4], saturation=[0.6, 1.4], hue=[-0.1, 0.1])
+), RandomGrayscale(p=0.2), RandomApply(
+    p=0.5
+    <detectron2.data.transforms.augmentation_impl.GaussianBlur object at 0x7faf8112e668>
+), Compose(
+    ToTensor()
+    RandomErasing(p=0.7, scale=(0.05, 0.2), ratio=(0.3, 3.3), value=random, inplace=False)
+    RandomErasing(p=0.5, scale=(0.02, 0.2), ratio=(0.1, 6), value=random, inplace=False)
+    RandomErasing(p=0.3, scale=(0.02, 0.2), ratio=(0.05, 8), value=random, inplace=False)
+    ToPILImage()
+)]
+[02/23 06:29:34] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 06:29:34] d2.data.build INFO: Using training sampler TrainingSampler
+[02/23 06:29:34] d2.data.common INFO: Serializing 2965 elements to byte tensors and concatenating them all ...
+[02/23 06:29:34] d2.data.common INFO: Serialized dataset takes 4.11 MiB
+[02/23 07:04:14] fvcore.common.checkpoint INFO: Saving checkpoint to ./checkpoint/foggy/model_0029649.pth
+[02/23 07:04:14] fvcore.common.checkpoint INFO: Saving checkpoint to ./checkpoint/foggy/model_final.pth
+[02/23 07:04:15] detectron2 INFO: [EPOCH 10][STUDENT] Evaluation start
+[02/23 07:04:16] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 07:04:16] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 07:04:16] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 07:04:16] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 07:04:59] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 07:04:59] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 07:04:59] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 07:04:59] d2.evaluation.testing INFO: copypaste: 18.8046,33.8015,17.6776
+[02/23 07:04:59] detectron2 INFO: AP for person: 33.24794820737287
+[02/23 07:04:59] detectron2 INFO: AP for rider: 42.14046152037563
+[02/23 07:04:59] detectron2 INFO: AP for car: 52.342977696213076
+[02/23 07:04:59] detectron2 INFO: AP for truck: 17.711323763955342
+[02/23 07:04:59] detectron2 INFO: AP for bus: 38.47680753646375
+[02/23 07:04:59] detectron2 INFO: AP for train: 21.77784336875246
+[02/23 07:04:59] detectron2 INFO: AP for motorcycle: 28.864695910150456
+[02/23 07:04:59] detectron2 INFO: AP for bicycle: 35.849716046547506
+[02/23 07:04:59] detectron2 INFO: [EPOCH 10][TEACHER] Evaluation start
+[02/23 07:04:59] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 07:04:59] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 07:04:59] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 07:04:59] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 07:05:46] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 07:05:46] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 07:05:46] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 07:05:46] d2.evaluation.testing INFO: copypaste: 18.0841,32.9960,17.0347
+[02/23 07:05:46] detectron2 INFO: AP for person: 32.88942196045942
+[02/23 07:05:46] detectron2 INFO: AP for rider: 41.58528304978905
+[02/23 07:05:46] detectron2 INFO: AP for car: 52.18139537672606
+[02/23 07:05:46] detectron2 INFO: AP for truck: 15.74074074074074
+[02/23 07:05:46] detectron2 INFO: AP for bus: 37.11968325357012
+[02/23 07:05:46] detectron2 INFO: AP for train: 23.71365832235397
+[02/23 07:05:46] detectron2 INFO: AP for motorcycle: 26.48150917065391
+[02/23 07:05:46] detectron2 INFO: AP for bicycle: 34.256365550256746
+[02/23 07:05:47] detectron2 INFO: [FINAL][STUDENT] Evaluation start
+[02/23 07:05:47] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 07:05:47] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 07:05:47] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 07:05:47] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 07:06:31] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 07:06:31] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 07:06:31] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 07:06:31] d2.evaluation.testing INFO: copypaste: 18.8046,33.8015,17.6776
+[02/23 07:06:31] detectron2 INFO: AP for person: 33.24794820737287
+[02/23 07:06:31] detectron2 INFO: AP for rider: 42.14046152037563
+[02/23 07:06:31] detectron2 INFO: AP for car: 52.342977696213076
+[02/23 07:06:31] detectron2 INFO: AP for truck: 17.711323763955342
+[02/23 07:06:31] detectron2 INFO: AP for bus: 38.47680753646375
+[02/23 07:06:31] detectron2 INFO: AP for train: 21.77784336875246
+[02/23 07:06:31] detectron2 INFO: AP for motorcycle: 28.864695910150456
+[02/23 07:06:31] detectron2 INFO: AP for bicycle: 35.849716046547506
+[02/23 07:06:31] detectron2 INFO: [FINAL][TEACHER] Evaluation start
+[02/23 07:06:31] d2.data.dataset_mapper INFO: [DatasetMapper] Augmentations used in inference: [ResizeShortestEdge(short_edge_length=(600, 600), max_size=1333, sample_style='choice')]
+[02/23 07:06:31] d2.data.common INFO: Serializing 492 elements to byte tensors and concatenating them all ...
+[02/23 07:06:31] d2.data.common INFO: Serialized dataset takes 0.76 MiB
+[02/23 07:06:31] d2.evaluation.evaluator INFO: Start inference on 492 batches
+[02/23 07:07:17] detectron2 INFO: Evaluation results for cityscape_2007_test_t in csv format:
+[02/23 07:07:17] d2.evaluation.testing INFO: copypaste: Task: bbox
+[02/23 07:07:17] d2.evaluation.testing INFO: copypaste: AP,AP50,AP75
+[02/23 07:07:17] d2.evaluation.testing INFO: copypaste: 18.0841,32.9960,17.0347
+[02/23 07:07:17] detectron2 INFO: AP for person: 32.88942196045942
+[02/23 07:07:17] detectron2 INFO: AP for rider: 41.58528304978905
+[02/23 07:07:17] detectron2 INFO: AP for car: 52.18139537672606
+[02/23 07:07:17] detectron2 INFO: AP for truck: 15.74074074074074
+[02/23 07:07:17] detectron2 INFO: AP for bus: 37.11968325357012
+[02/23 07:07:17] detectron2 INFO: AP for train: 23.71365832235397
+[02/23 07:07:17] detectron2 INFO: AP for motorcycle: 26.48150917065391
+[02/23 07:07:17] detectron2 INFO: AP for bicycle: 34.256365550256746

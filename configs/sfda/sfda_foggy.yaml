@@ -18,7 +18,7 @@ DATASETS:
   TRAIN: ("cityscape_2007_train_t",)
   TEST: ("cityscape_2007_test_t",)
 SOLVER:
-  BASE_LR: 0.001
+  BASE_LR: 0.0001
   WEIGHT_DECAY: 0.0001
   STEPS: ()
   MAX_ITER: 70000
@@ -32,11 +32,12 @@ SOURCE_FREE:
   MODE: True
   PETS:
     ENABLED: True
-    EXCHANGE_PERIOD: 1
+    EXCHANGE_PERIOD: 2
     EMA_KEEP_RATE: 0.999
     CONF_THRESH: 0.5
     IOU_THRESH: 0.5
     BETA: 0.5
     EPOCH_ITERS: 0
-    WARMUP_EPOCHS: 2
+    TOTAL_EPOCHS: 10
+    WARMUP_EPOCHS: 0
 OUTPUT_DIR: "./checkpoint/foggy"

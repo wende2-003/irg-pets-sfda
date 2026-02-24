@@ -513,7 +513,7 @@ def train_sfda(cfg, model_student, model_dynamic, model_static=None, resume=Fals
 
     data_loader = build_detection_train_loader(cfg)
 
-    total_epochs = 5
+    total_epochs = max(1, int(cfg.SOURCE_FREE.PETS.TOTAL_EPOCHS)) if use_pets else 10
     len_data_loader = len(data_loader.dataset.dataset.dataset)
     start_iter = 0
     if use_pets and getattr(cfg.SOURCE_FREE.PETS, "EPOCH_ITERS", 0) > 0:

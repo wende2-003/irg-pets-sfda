@@ -1,0 +1,8 @@
+学生单方面的更新静态教师
+动态教师的ema更新更改后，与原文irg的ema更新一致，都是在epoch末更新一次，而不是每次iter都更新
+
+阶段 A（近似纯 IRG）
+ST_CONF_THRESH=1.1
+DT_BOX_WEIGHT=1.0
+DT_SCORE_WEIGHT=1.0
+epoch = 10

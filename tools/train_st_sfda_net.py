@@ -329,62 +329,96 @@ def _empty_instances(image_size, device):
     return empty
 
 
-def consensus_fusion(static_results, dynamic_results, score_thresh=0.5, iou_thresh=0.5, beta=0.5):
+def consensus_fusion(
+    static_results,
+    dynamic_results,
+    score_thresh=0.5,
+    dt_score_thresh=None,
+    st_score_thresh=None,
+    iou_thresh=0.5,
+    beta=0.5,
+    dt_box_weight=0.8,
+    dt_score_weight=0.8,
+):
+    # DT-dominant consensus: DT proposes, ST only validates (same class + IoU) and
+    # provides a small correction to box/score. `beta` is kept for API compatibility.
+    # DT-only fallback: when ST cannot validate a DT proposal, keep the DT proposal.
+    if dt_score_thresh is None:
+        dt_score_thresh = score_thresh
+    if st_score_thresh is None:
+        st_score_thresh = score_thresh
+    dt_box_w = max(0.0, min(1.0, float(dt_box_weight)))
+    dt_score_w = max(0.0, min(1.0, float(dt_score_weight)))
+    st_box_w = 1.0 - dt_box_w
+    st_score_w = 1.0 - dt_score_w
     fused_results = []
     for st, dt in zip(static_results, dynamic_results):
-        if len(st) == 0 or len(dt) == 0:
+        if len(dt) == 0:
             image_size = st.image_size if len(st) > 0 else dt.image_size
             device = st.pred_boxes.tensor.device if len(st) > 0 else dt.pred_boxes.tensor.device
             fused_results.append(_empty_instances(image_size, device))
             continue
 
-        st = st[st.scores > score_thresh]
-        dt = dt[dt.scores > score_thresh]
-        if len(st) == 0 or len(dt) == 0:
+        st = st[st.scores > st_score_thresh]
+        dt = dt[dt.scores > dt_score_thresh]
+        if len(dt) == 0:
             image_size = st.image_size if len(st) > 0 else dt.image_size
             device = st.pred_boxes.tensor.device if len(st) > 0 else dt.pred_boxes.tensor.device
             fused_results.append(_empty_instances(image_size, device))
             continue
+        if len(st) == 0:
+            # No static validation available; fall back to DT-only pseudo labels.
+            inst = Instances(dt.image_size)
+            inst.pred_boxes = Boxes(dt.pred_boxes.tensor.clone())
+            inst.scores = dt.scores.clone()
+            inst.pred_classes = dt.pred_classes.clone()
+            fused_results.append(inst)
+            continue
 
-        st_order = torch.argsort(st.scores, descending=True)
-        used_dt = set()
+        dt_order = torch.argsort(dt.scores, descending=True)
+        used_st = set()
         fused_boxes = []
         fused_scores = []
         fused_classes = []
 
-        for si in st_order:
-            st_cls = st.pred_classes[si]
-            dt_idxs = torch.nonzero(dt.pred_classes == st_cls).view(-1)
-            if dt_idxs.numel() == 0:
+        for di in dt_order:
+            dt_cls = dt.pred_classes[di]
+            st_idxs = torch.nonzero(st.pred_classes == dt_cls).view(-1)
+            if st_idxs.numel() == 0:
+                # DT-only fallback when no class-consistent ST proposal exists.
+                fused_boxes.append(dt.pred_boxes.tensor[di].clone())
+                fused_scores.append(dt.scores[di].clone())
+                fused_classes.append(dt_cls.clone())
                 continue
 
-            ious = pairwise_iou(st.pred_boxes[si : si + 1], dt.pred_boxes[dt_idxs]).squeeze(0)
-            if used_dt:
-                for j, idx in enumerate(dt_idxs):
-                    if int(idx) in used_dt:
+            ious = pairwise_iou(dt.pred_boxes[di : di + 1], st.pred_boxes[st_idxs]).squeeze(0)
+            if used_st:
+                for j, idx in enumerate(st_idxs):
+                    if int(idx) in used_st:
                         ious[j] = -1
 
             max_iou, max_j = ious.max(0)
             if max_iou < iou_thresh:
+                # DT-only fallback when ST does not pass IoU validation.
+                fused_boxes.append(dt.pred_boxes.tensor[di].clone())
+                fused_scores.append(dt.scores[di].clone())
+                fused_classes.append(dt_cls.clone())
                 continue
 
-            dt_idx = dt_idxs[max_j]
-            used_dt.add(int(dt_idx))
+            st_idx = st_idxs[max_j]
+            used_st.add(int(st_idx))
 
-            st_score = st.scores[si]
-            dt_score = dt.scores[dt_idx]
-            denom = st_score + dt_score
-            if denom <= 0:
-                continue
-
+            dt_score = dt.scores[di]
+            st_score = st.scores[st_idx]
             fused_box = (
-                st.pred_boxes.tensor[si] * st_score + dt.pred_boxes.tensor[dt_idx] * dt_score
-            ) / denom
-            fused_score = beta * st_score + (1.0 - beta) * dt_score
+                dt.pred_boxes.tensor[di] * dt_box_w
+                + st.pred_boxes.tensor[st_idx] * st_box_w
+            )
+            fused_score = dt_score_w * dt_score + st_score_w * st_score
 
             fused_boxes.append(fused_box)
             fused_scores.append(fused_score)
-            fused_classes.append(st_cls)
+            fused_classes.append(dt_cls)
 
         if fused_boxes:
             fused_boxes = torch.stack(fused_boxes, dim=0)
@@ -401,22 +435,20 @@ def consensus_fusion(static_results, dynamic_results, score_thresh=0.5, iou_thre
     return fused_results
 
 
-def exchange_shared_weights(model_a, model_b):
-    a_state = model_a.state_dict()
-    b_state = model_b.state_dict()
+def copy_shared_weights(src_model, dst_model):
+    """Copy shared-shape params from src to dst (one-way refresh, no swap)."""
+    src_state = src_model.state_dict()
+    dst_state = dst_model.state_dict()
     shared = []
-    for k, v in a_state.items():
-        if k in b_state and b_state[k].shape == v.shape:
+    for k, v in src_state.items():
+        if k in dst_state and dst_state[k].shape == v.shape:
             shared.append(k)
     if not shared:
-        return
-    a_shared = {k: a_state[k].clone() for k in shared}
-    b_shared = {k: b_state[k].clone() for k in shared}
+        return 0
     for k in shared:
-        a_state[k] = b_shared[k]
-        b_state[k] = a_shared[k]
-    model_a.load_state_dict(a_state, strict=False)
-    model_b.load_state_dict(b_state, strict=False)
+        dst_state[k] = src_state[k].clone()
+    dst_model.load_state_dict(dst_state, strict=False)
+    return len(shared)
 @torch.no_grad()
 def update_teacher_model(model_student, model_teacher, keep_rate=0.996):
     if comm.get_world_size() > 1:
@@ -494,8 +526,24 @@ def train_sfda(cfg, model_student, model_dynamic, model_static=None, resume=Fals
     warmup_epochs = max(0, cfg.SOURCE_FREE.PETS.WARMUP_EPOCHS) if use_pets else 0
     ema_keep = cfg.SOURCE_FREE.PETS.EMA_KEEP_RATE if use_pets else 0.9
     conf_thresh = cfg.SOURCE_FREE.PETS.CONF_THRESH if use_pets else 0.9
+    if use_pets:
+        dt_conf_thresh = (
+            cfg.SOURCE_FREE.PETS.DT_CONF_THRESH
+            if cfg.SOURCE_FREE.PETS.DT_CONF_THRESH >= 0
+            else conf_thresh
+        )
+        st_conf_thresh = (
+            cfg.SOURCE_FREE.PETS.ST_CONF_THRESH
+            if cfg.SOURCE_FREE.PETS.ST_CONF_THRESH >= 0
+            else conf_thresh
+        )
+    else:
+        dt_conf_thresh = conf_thresh
+        st_conf_thresh = conf_thresh
     iou_thresh = cfg.SOURCE_FREE.PETS.IOU_THRESH if use_pets else 0.5
     beta = cfg.SOURCE_FREE.PETS.BETA if use_pets else 0.5
+    dt_box_weight = cfg.SOURCE_FREE.PETS.DT_BOX_WEIGHT if use_pets else 0.8
+    dt_score_weight = cfg.SOURCE_FREE.PETS.DT_SCORE_WEIGHT if use_pets else 0.8
 
     checkpoint = copy.deepcopy(model_dynamic.state_dict())
 
@@ -586,8 +634,12 @@ def train_sfda(cfg, model_student, model_dynamic, model_static=None, resume=Fals
                             static_results,
                             dynamic_results,
                             score_thresh=conf_thresh,
+                            dt_score_thresh=dt_conf_thresh,
+                            st_score_thresh=st_conf_thresh,
                             iou_thresh=iou_thresh,
                             beta=beta,
+                            dt_box_weight=dt_box_weight,
+                            dt_score_weight=dt_score_weight,
                         )
                         teacher_pseudo_results, _ = process_pseudo_label(
                             consensus_results, 0.0, "roih", "thresholding"
@@ -613,9 +665,6 @@ def train_sfda(cfg, model_student, model_dynamic, model_static=None, resume=Fals
 
                 losses.backward()
                 optimizer.step()
-                if use_pets:
-                    new_dynamic_dict = update_teacher_model(model_student, model_dynamic, keep_rate=ema_keep)
-                    model_dynamic.load_state_dict(new_dynamic_dict)
                 storage.put_scalar("lr", optimizer.param_groups[0]["lr"], smoothing_hint=False)
 
                 global_iter = (epoch - 1) * max_iter + iteration
@@ -652,12 +701,20 @@ def train_sfda(cfg, model_student, model_dynamic, model_static=None, resume=Fals
 
                 periodic_checkpointer.step(global_iter)
 
-            if not use_pets:
-                new_dynamic_dict = update_teacher_model(model_student, model_dynamic, keep_rate=ema_keep)
-                model_dynamic.load_state_dict(new_dynamic_dict)
-            else:
+            # Match the original IRG-style schedule: update the dynamic teacher once per epoch.
+            new_dynamic_dict = update_teacher_model(model_student, model_dynamic, keep_rate=ema_keep)
+            model_dynamic.load_state_dict(new_dynamic_dict)
+
+            if use_pets:
                 if epoch > warmup_epochs and epoch % exchange_period == 0 and model_static is not None:
-                    exchange_shared_weights(model_student, model_static)
+                    # One-way refresh: static teacher <- current student snapshot.
+                    # Student is kept unchanged to reduce abrupt regressions after exchange.
+                    num_copied = copy_shared_weights(model_student, model_static)
+                    logger.info(
+                        "[EPOCH %d] Refresh static teacher from student (copied %d shared params)",
+                        epoch,
+                        num_copied,
+                    )
 
             if cfg.TEST.EVAL_PERIOD > 0:
                 model_student.eval()

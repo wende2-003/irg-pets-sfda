@@ -30,6 +30,8 @@ TEST:
 SOURCE_FREE:
   TYPE: True
   MODE: True
+  IRG:
+    ENABLED: False
   PETS:
     ENABLED: True
     EXCHANGE_PERIOD: 1

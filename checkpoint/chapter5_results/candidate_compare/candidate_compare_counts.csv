@@ -1,0 +1,7 @@
+image_id,source_n05,source_n09,ours_n05,ours_n09,delta_n05,delta_n09
+lindau_000006_000019_leftImg8bit_foggy,4,4,6,5,2,1
+lindau_000039_000019_leftImg8bit_foggy,7,4,11,7,4,3
+frankfurt_000001_041354_leftImg8bit_foggy,3,3,3,3,0,0
+frankfurt_000001_007857_leftImg8bit_foggy,3,3,19,5,16,2
+frankfurt_000001_062793_leftImg8bit_foggy,6,4,19,14,13,10
+frankfurt_000001_073464_leftImg8bit_foggy,11,9,14,12,3,3

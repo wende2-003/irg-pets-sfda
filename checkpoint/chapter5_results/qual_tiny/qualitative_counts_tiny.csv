@@ -1,0 +1,4 @@
+scene,image_id,source_boxes_ge_0_5,source_boxes_ge_0_9,ours_boxes_ge_0_5,ours_boxes_ge_0_9,note
+fog_low_contrast,lindau_000026_000019_leftImg8bit_foggy,4,3,4,2,tiny_infer_128
+strong_light,frankfurt_000000_009969_leftImg8bit_foggy,4,1,5,2,tiny_infer_128
+occlusion_dense,frankfurt_000001_017101_leftImg8bit_foggy,0,0,3,1,tiny_infer_128

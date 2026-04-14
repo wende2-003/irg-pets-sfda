@@ -1,0 +1,1 @@
+图X  Cityscapes→Foggy Cityscapes（C2F）跨域目标检测基准示意图。左列为晴天清晰域（Cityscapes），右列为对应的雾天域（Foggy Cityscapes），每行展示同一城市场景在天气变化下的成对图像。彩色边界框表示共享的目标标注类别（person/rider/car/truck/bus/train/motorcycle/bicycle），可见在语义结构基本保持一致的前提下，雾化导致目标对比度下降、边界细节弱化与远距目标可见性降低，形成显著视觉域偏移。该C2F设置因此成为验证无监督/无源域自适应目标检测方法鲁棒性的典型评测基准。

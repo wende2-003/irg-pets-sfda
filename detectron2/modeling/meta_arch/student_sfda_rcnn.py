@@ -49,6 +49,7 @@ class student_sfda_RCNN(nn.Module):
         roi_heads: nn.Module,
         pixel_mean: Tuple[float],
         pixel_std: Tuple[float],
+        irg_enabled: bool = True,
         input_format: Optional[str] = None,
         vis_period: int = 0,
     ):
@@ -78,8 +79,13 @@ class student_sfda_RCNN(nn.Module):
             self.pixel_mean.shape == self.pixel_std.shape
         ), f"{self.pixel_mean} and {self.pixel_std} have different shapes!"
 
-        self.GraphCN = GCN(nfeat=2048, nhid=512)
-        self.Graph_conloss = GraphConLoss()
+        self.irg_enabled = irg_enabled
+        if self.irg_enabled:
+            self.GraphCN = GCN(nfeat=2048, nhid=512)
+            self.Graph_conloss = GraphConLoss()
+        else:
+            self.GraphCN = None
+            self.Graph_conloss = None
 
 
     @classmethod
@@ -89,6 +95,7 @@ class student_sfda_RCNN(nn.Module):
             "backbone": backbone,
             "proposal_generator": build_proposal_generator(cfg, backbone.output_shape()),
             "roi_heads": build_roi_heads(cfg, backbone.output_shape()),
+            "irg_enabled": cfg.SOURCE_FREE.IRG.ENABLED,
             "input_format": cfg.INPUT.FORMAT,
             "vis_period": cfg.VIS_PERIOD,
             "pixel_mean": cfg.MODEL.PIXEL_MEAN,
@@ -211,16 +218,19 @@ class student_sfda_RCNN(nn.Module):
         t_box_features = model_teacher.roi_heads._shared_roi_transform([t_features['res4']], [t_proposals[0].proposal_boxes])
         t_roih_logits = model_teacher.roi_heads.box_predictor(t_box_features.mean(dim=[2, 3]))
 
-        s_graph_feat = self.GraphCN(s_box_features.mean(dim=[2, 3]))
-        s_graph_logits = self.roi_heads.box_predictor(s_graph_feat)
-        
-        t_graph_feat = self.GraphCN(t_box_features.mean(dim=[2, 3]))
-        t_graph_logits = model_teacher.roi_heads.box_predictor(t_graph_feat)
-
         losses["st_const"] = self.KD_loss(s_roih_logits[0], t_roih_logits[0]) 
-        losses["s_graph_const"] = self.KD_loss(s_graph_logits[0], s_roih_logits[0]) 
-        losses["t_graph_const"] = self.KD_loss(t_graph_logits[0], t_roih_logits[0]) 
-        losses["graph_conloss"] = self.Graph_conloss(t_box_features.mean(dim=[2, 3]), s_box_features.mean(dim=[2, 3]), self.GraphCN)
+        if self.irg_enabled:
+            s_graph_feat = self.GraphCN(s_box_features.mean(dim=[2, 3]))
+            s_graph_logits = self.roi_heads.box_predictor(s_graph_feat)
+            t_graph_feat = self.GraphCN(t_box_features.mean(dim=[2, 3]))
+            t_graph_logits = model_teacher.roi_heads.box_predictor(t_graph_feat)
+            losses["s_graph_const"] = self.KD_loss(s_graph_logits[0], s_roih_logits[0]) 
+            losses["t_graph_const"] = self.KD_loss(t_graph_logits[0], t_roih_logits[0]) 
+            losses["graph_conloss"] = self.Graph_conloss(
+                t_box_features.mean(dim=[2, 3]),
+                s_box_features.mean(dim=[2, 3]),
+                self.GraphCN,
+            )
 
         return losses
 
